@@ -1,0 +1,4 @@
+djangorestframework==3.9.0
+django==2.1.2
+coverage==4.5.1
+django-cors-headers==2.4.0
