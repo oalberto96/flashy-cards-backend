@@ -71,3 +71,9 @@ class SignUpAPITest(TestCase):
         response = self.client.post(
             self.sign_up_url, user_data, self.json_type)
         self.assertGreaterEqual(len(response.data["token"]), 7)
+
+    def test_should_return_conflict_if_username_is_not_in_the_payload(self):
+        user_data = {"email": "test@gmail.com", "password": "pass1234"}
+        response = self.client.post(
+            self.sign_up_url, user_data, self.json_type)
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)

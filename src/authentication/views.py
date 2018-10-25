@@ -28,10 +28,13 @@ def sign_up(request):
     password = request.data.get("password")
     email = request.data.get("email")
     credentials = {}
-    user = User.objects.create_user(username, email, password)
-    if(user):
-        credentials["csrf"] = get_token(request)
-        auth.login(request, user)
-        token, created = Token.objects.get_or_create(user=user)
-        credentials["token"] = token.key
-    return Response(status=status.HTTP_200_OK, data=credentials)
+    if(username and password and email):
+        user = User.objects.create_user(username, email, password)
+        if(user):
+            credentials["csrf"] = get_token(request)
+            auth.login(request, user)
+            token, created = Token.objects.get_or_create(user=user)
+            credentials["token"] = token.key
+        return Response(status=status.HTTP_200_OK, data=credentials)
+    else:
+        return Response(status=status.HTTP_409_CONFLICT)
