@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from django.urls import resolve
 from django.contrib.auth.models import User
 from rest_framework import status
-from authentication.views import login
+from authentication.views import login, sign_up
 import json
 
 
@@ -39,3 +39,13 @@ class LoginAPITest(TestCase):
         response = self.client.post(
             self.login_url, user_data, content_type="application/json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class SignUpAPITest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.sign_up_url = "/api/authentication/signup"
+
+    def test_should_url_resolves_to_signup_view(self):
+        found = resolve(self.sign_up_url)
+        self.assertEqual(found.func, sign_up)

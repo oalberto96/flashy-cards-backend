@@ -19,3 +19,8 @@ def login(request):
         credentials["token"] = token.key
         return Response(status=status.HTTP_200_OK, data=credentials)
     return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def sign_up(request):
+    return Response()
