@@ -1,5 +1,6 @@
-from django.shortcuts import render
 from django.middleware.csrf import get_token
+from django.contrib.auth.models import User
+from django.shortcuts import render
 from django.contrib import auth
 from rest_framework.decorators import api_view
 from rest_framework.authtoken.models import Token
@@ -23,4 +24,14 @@ def login(request):
 
 @api_view(['POST'])
 def sign_up(request):
-    return Response()
+    username = request.data.get("username")
+    password = request.data.get("password")
+    email = request.data.get("email")
+    credentials = {}
+    user = User.objects.create_user(username, email, password)
+    if(user):
+        credentials["csrf"] = get_token(request)
+        auth.login(request, user)
+        token, created = Token.objects.get_or_create(user=user)
+        credentials["token"] = token.key
+    return Response(status=status.HTTP_200_OK, data=credentials)

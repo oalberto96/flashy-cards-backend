@@ -45,7 +45,29 @@ class SignUpAPITest(TestCase):
     def setUp(self):
         self.client = Client()
         self.sign_up_url = "/api/authentication/signup"
+        self.json_type = "application/json"
 
     def test_should_url_resolves_to_signup_view(self):
         found = resolve(self.sign_up_url)
         self.assertEqual(found.func, sign_up)
+
+    def test_should_save_new_user(self):
+        user_data = {"username": "test_user",
+                     "email": "test@gmail.com", "password": "pass123456"}
+        self.client.post(self.sign_up_url, user_data, self.json_type)
+        user = User.objects.get(username=user_data["username"])
+        self.assertIsNotNone(user)
+
+    def test_should_return_csrf_when_data_is_correct(self):
+        user_data = {"username": "test_user",
+                     "email": "test@gmail.com", "password": "pass123456"}
+        response = self.client.post(
+            self.sign_up_url, user_data, self.json_type)
+        self.assertGreaterEqual(len(response.data["csrf"]), 7)
+
+    def test_should_return_token_when_data_is_correct(self):
+        user_data = {"username": "test_user",
+                     "email": "test@gmail.com", "password": "pass123456"}
+        response = self.client.post(
+            self.sign_up_url, user_data, self.json_type)
+        self.assertGreaterEqual(len(response.data["token"]), 7)
