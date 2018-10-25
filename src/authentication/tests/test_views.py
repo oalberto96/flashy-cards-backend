@@ -77,3 +77,22 @@ class SignUpAPITest(TestCase):
         response = self.client.post(
             self.sign_up_url, user_data, self.json_type)
         self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+
+    def test_should_return_conflict_if_username_already_exist(self):
+        user_data = {"username": "test_user",
+                     "email": "test@gmail.com", "password": "pass1234"}
+        self.client.post(
+            self.sign_up_url, user_data, self.json_type)
+        response = self.client.post(
+            self.sign_up_url, user_data, self.json_type)
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+
+    def test_should_return_conflict_message_if_username_already_exist(self):
+        user_data = {"username": "test_user",
+                     "email": "test@gmail.com", "password": "pass1234"}
+        self.client.post(
+            self.sign_up_url, user_data, self.json_type)
+        response = self.client.post(
+            self.sign_up_url, user_data, self.json_type)
+        self.assertEqual(
+            response.data["message"], "UNIQUE constraint failed: auth_user.username")

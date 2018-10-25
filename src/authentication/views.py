@@ -2,6 +2,7 @@ from django.middleware.csrf import get_token
 from django.contrib.auth.models import User
 from django.shortcuts import render
 from django.contrib import auth
+from django.db import Error
 from rest_framework.decorators import api_view
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
@@ -28,13 +29,16 @@ def sign_up(request):
     password = request.data.get("password")
     email = request.data.get("email")
     credentials = {}
+    data = {}
     if(username and password and email):
-        user = User.objects.create_user(username, email, password)
-        if(user):
-            credentials["csrf"] = get_token(request)
-            auth.login(request, user)
-            token, created = Token.objects.get_or_create(user=user)
-            credentials["token"] = token.key
-        return Response(status=status.HTTP_200_OK, data=credentials)
-    else:
-        return Response(status=status.HTTP_409_CONFLICT)
+        try:
+            user = User.objects.create_user(username, email, password)
+            if(user):
+                credentials["csrf"] = get_token(request)
+                auth.login(request, user)
+                token, created = Token.objects.get_or_create(user=user)
+                credentials["token"] = token.key
+            return Response(status=status.HTTP_200_OK, data=credentials)
+        except Error as e:
+            data["message"] = str(e)
+    return Response(status=status.HTTP_409_CONFLICT, data=data)
