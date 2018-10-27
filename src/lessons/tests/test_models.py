@@ -1,13 +1,13 @@
 from django.test import TestCase
-from lessons.models import Audiences
+from lessons.models import Audience
 
 
-class AudiencesModelTest(TestCase):
+class AudienceModelTest(TestCase):
 
     def test_model_exist(self):
-        audience = Audiences()
-        self.assertIsInstance(audience, Audiences)
+        audience = Audience()
+        self.assertIsInstance(audience, Audience)
 
     def test_string_representation(self):
-        audience = Audiences(name="Public")
+        audience = Audience(name="Public")
         self.assertEqual(str(audience), "Public")
