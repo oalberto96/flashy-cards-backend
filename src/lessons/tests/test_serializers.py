@@ -1,6 +1,6 @@
 from django.test import TestCase
-from lessons.models import Audience
-from lessons.serializers import AudienceSerializer
+from lessons.models import Audience, MediaType
+from lessons.serializers import AudienceSerializer, MediaTypeSerializer
 
 
 class AudienceSerializerTest(TestCase):
@@ -20,3 +20,21 @@ class AudienceSerializerTest(TestCase):
     def test_name_field_content(self):
         data = self.serializer.data
         self.assertEqual(data["name"], self.audience_attributes["name"])
+
+
+class MediaTypeSerializerTest(TestCase):
+
+    def setUp(self):
+        self.media_type_attributes = {
+            "name": "Image"
+        }
+        self.media_type = MediaType(**self.media_type_attributes)
+        self.serializer = MediaTypeSerializer(instance=self.media_type)
+
+    def test_contains_expected_fields(self):
+        data = self.serializer.data
+        self.assertEqual(set(data), set(["name"]))
+
+    def test_name_field_content(self):
+        data = self.serializer.data
+        self.assertEqual(data["name"], self.media_type_attributes["name"])
