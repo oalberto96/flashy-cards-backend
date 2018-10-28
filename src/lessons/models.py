@@ -8,3 +8,10 @@ class Audience(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class MediaType(models.Model):
+    name = models.CharField(max_length=30)
+
+    def __str__(self):
+        return self.name
