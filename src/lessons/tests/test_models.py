@@ -1,5 +1,5 @@
 from django.test import TestCase
-from lessons.models import Audience, MediaType
+from lessons.models import Audience, MediaType, Card
 
 
 class AudienceModelTest(TestCase):
@@ -22,3 +22,17 @@ class MediaTypeModelTest(TestCase):
     def test_string_representation(self):
         media_type = MediaType(name="Image")
         self.assertEqual(str(media_type), "Image")
+
+
+class CardModelTest(TestCase):
+
+    def setUp(self):
+        self.type_image = MediaType(name="Image")
+
+    def test_model_exist(self):
+        card = Card()
+        self.assertIsInstance(card, Card)
+
+    def test_string_representation(self):
+        card = Card(media_type=self.type_image, text="Dog")
+        self.assertEqual(str(card), "Dog")
