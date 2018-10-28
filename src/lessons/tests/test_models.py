@@ -1,5 +1,5 @@
 from django.test import TestCase
-from lessons.models import Audience, MediaType, Card, Lesson
+from lessons.models import Audience, MediaType, Card, Lesson, Concept
 
 
 class AudienceModelTest(TestCase):
@@ -52,3 +52,24 @@ class LessonModelTest(TestCase):
         lesson = Lesson(
             name="Animals", description="Animals in German", audience=self.public_audience)
         self.assertEqual(str(lesson), "Animals")
+
+
+class ConceptModelTest(TestCase):
+
+    def setUp(self):
+        self.type_image = MediaType(name="Image")
+        self.public_audience = Audience(name="Public")
+        self.animals_lesson = Lesson(
+            name="Animals", description="Animals in German", audience=self.public_audience)
+        self.dog_card = Card(media_type=self.type_image, text="Dog")
+        self.hund_card = Card(text="Hund")
+
+    def test_model_exist(self):
+        dog_concept = Concept(lesson=self.animals_lesson,
+                              card_a=self.dog_card, card_b=self.hund_card)
+        self.assertIsInstance(dog_concept, Concept)
+
+    def test_model_representation(self):
+        dog_concept = Concept(lesson=self.animals_lesson,
+                              card_a=self.dog_card, card_b=self.hund_card)
+        self.assertEqual(str(dog_concept), "Dog : Hund")

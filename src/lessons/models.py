@@ -39,3 +39,15 @@ class Lesson(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Concept(models.Model):
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    card_a = models.ForeignKey(
+        Card, related_name="card_a", on_delete=models.SET_NULL, null=True)
+    card_b = models.ForeignKey(
+        Card, related_name="card_b", on_delete=models.SET_NULL, null=True)
+    creation_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return "{} : {}".format(self.card_a, self.card_b)
