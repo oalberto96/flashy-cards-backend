@@ -46,13 +46,15 @@ class CardModelTest(TestCase):
 
     def setUp(self):
         self.type_image = MediaType(name="Image")
+        self.dog_picture = Media(
+            media_type=self.type_image, source="http://test.test.png")
 
     def test_model_exist(self):
         card = Card()
         self.assertIsInstance(card, Card)
 
     def test_string_representation(self):
-        card = Card(media_type=self.type_image, text="Dog")
+        card = Card(media=self.dog_picture, text="Dog")
         self.assertEqual(str(card), "Dog")
 
 
@@ -76,10 +78,12 @@ class ConceptModelTest(TestCase):
 
     def setUp(self):
         self.type_image = MediaType(name="Image")
+        self.dog_picture = Media(
+            media_type=self.type_image, source="http://test.test.png")
         self.public_audience = Audience(name="Public")
         self.animals_lesson = Lesson(
             name="Animals", description="Animals in German", audience=self.public_audience)
-        self.dog_card = Card(media_type=self.type_image, text="Dog")
+        self.dog_card = Card(media=self.dog_picture, text="Dog")
         self.hund_card = Card(text="Hund")
 
     def test_model_exist(self):
