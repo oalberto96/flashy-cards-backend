@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from lessons.models import Audience, MediaType, Media, Card, Lesson
-from lessons.serializers import AudienceSerializer, MediaTypeSerializer, MediaSerializer, CardSerializer, LessonSerializer
+from lessons.models import Audience, MediaType, Media, Card, Lesson, Concept
+from lessons.serializers import AudienceSerializer, MediaTypeSerializer, MediaSerializer, CardSerializer, LessonSerializer, ConceptSerializer
 
 
 class AudienceSerializerTest(TestCase):
@@ -126,3 +126,37 @@ class LessonSerializerTest(TestCase):
         data = self.serializer.data
         self.assertEqual(data["description"],
                          self.lesson_attributes["description"])
+
+
+class ConceptSerializerTest(TestCase):
+
+    def setUp(self):
+        self.lesson_attributes = {
+            "user": User(username="test user"),
+            "audience": Audience(name="Public"),
+            "name": "Animals",
+            "description": "Animals in German"
+        }
+        self.card_a = Card(text="Dog")
+        self.card_b = Card(text="Hund")
+        self.concept_attributes = {
+            "lesson": Lesson(**self.lesson_attributes),
+            "card_a": self.card_a,
+            "card_b": self.card_b
+        }
+        self.concept = Concept(**self.concept_attributes)
+        self.serializer = ConceptSerializer(instance=self.concept)
+
+    def test_contains_expected_fields(self):
+        data = self.serializer.data
+        self.assertEqual(set(data), set(["card_a", "card_b"]))
+
+    def test_card_a_content(self):
+        data = self.serializer.data
+        self.assertEqual(data["card_a"], {
+                         "text": "Dog", "media": None, "audio": ""})
+
+    def test_card_b_content(self):
+        data = self.serializer.data
+        self.assertEqual(data["card_b"], {
+                         "text": "Hund", "media": None, "audio": ""})
