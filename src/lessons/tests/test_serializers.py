@@ -1,6 +1,6 @@
 from django.test import TestCase
-from lessons.models import Audience, MediaType, Media
-from lessons.serializers import AudienceSerializer, MediaTypeSerializer, MediaSerializer
+from lessons.models import Audience, MediaType, Media, Card
+from lessons.serializers import AudienceSerializer, MediaTypeSerializer, MediaSerializer, CardSerializer
 
 
 class AudienceSerializerTest(TestCase):
@@ -63,3 +63,35 @@ class MediaSerializerTest(TestCase):
     def test_source_content(self):
         data = self.serializer.data
         self.assertEqual(data["source"], self.media_attributes["source"])
+
+
+class CardSerializerTest(TestCase):
+
+    def setUp(self):
+        image_type = MediaType(name="Image")
+        dog_picture = Media(media_type=image_type,
+                            source="http://test.test.png")
+        self.card_attributes = {
+            "media": dog_picture,
+            "text": "Dog",
+            "audio": "http://test.test.mp3"
+        }
+        self.card = Card(**self.card_attributes)
+        self.serializer = CardSerializer(instance=self.card)
+
+    def test_contains_expected_fields(self):
+        data = self.serializer.data
+        self.assertEqual(set(data), set(["media", "text", "audio"]))
+
+    def test_media_content(self):
+        data = self.serializer.data
+        self.assertEqual(
+            data["media"], {"media_type": {"name": "Image"}, "source": "http://test.test.png"})
+
+    def test_text_content(self):
+        data = self.serializer.data
+        self.assertEqual(data["text"], self.card_attributes["text"])
+
+    def test_audio_content(self):
+        data = self.serializer.data
+        self.assertEqual(data["audio"], self.card_attributes["audio"])
