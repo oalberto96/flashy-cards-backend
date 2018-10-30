@@ -18,6 +18,16 @@ class MediaType(models.Model):
         return self.name
 
 
+class Media(models.Model):
+    media_type = models.ForeignKey(
+        MediaType, on_delete=models.SET_NULL, null=True)
+    source = models.CharField(max_length=2000)
+    creation_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return "{}: {}".format(self.media_type.name, self.source)
+
+
 class Card(models.Model):
     media_type = models.ForeignKey(
         MediaType, on_delete=models.SET_NULL, null=True)
