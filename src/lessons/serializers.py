@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer
-from lessons.models import Audience, MediaType, Media, Card
+from lessons.models import Audience, MediaType, Media, Card, Lesson
 
 
 class AudienceSerializer(ModelSerializer):
@@ -28,3 +28,11 @@ class CardSerializer(ModelSerializer):
     class Meta:
         model = Card
         fields = ["text", "media", "audio"]
+
+
+class LessonSerializer(ModelSerializer):
+    audience = AudienceSerializer()
+
+    class Meta:
+        model = Lesson
+        fields = ["name", "description", "audience"]
