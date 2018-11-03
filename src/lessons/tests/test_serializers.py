@@ -34,7 +34,7 @@ class MediaTypeSerializerTest(TestCase):
 
     def test_contains_expected_fields(self):
         data = self.serializer.data
-        self.assertEqual(set(data), set(["name"]))
+        self.assertEqual(set(data), set(["name", "id"]))
 
     def test_name_field_content(self):
         data = self.serializer.data
@@ -59,7 +59,8 @@ class MediaSerializerTest(TestCase):
     def test_media_type_content(self):
         data = self.serializer.data
         self.assertEqual(data["media_type"], {
-                         "name": "Image"})
+            "id": None,
+            "name": "Image"})
 
     def test_source_content(self):
         data = self.serializer.data
@@ -87,7 +88,7 @@ class CardSerializerTest(TestCase):
     def test_media_content(self):
         data = self.serializer.data
         self.assertEqual(
-            data["media"], {"media_type": {"name": "Image"}, "source": "http://test.test.png"})
+            data["media"], {"media_type": {"id": None, "name": "Image"}, "source": "http://test.test.png"})
 
     def test_text_content(self):
         data = self.serializer.data

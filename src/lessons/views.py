@@ -1,21 +1,53 @@
 from django.shortcuts import render
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import status
-# Create your views here.
+from lessons.models import Card
+from lessons.serializers import CardSerializer
 
 
 class CardViewSet(ViewSet):
 
     def list(self, request):
-        queryset = []
-        return Response(queryset, status.HTTP_200_OK)
+        queryset = Card.objects.all()
+        serializer = CardSerializer(queryset, many=True)
+        return Response(serializer.data, status.HTTP_200_OK)
 
     def retrieve(self, request, pk=None):
-        return Response(status=status.HTTP_200_OK)
+        try:
+            card = Card.objects.get(id=pk)
+        except ValueError as e:
+            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
+        except ObjectDoesNotExist:
+            card = None
+        if(card):
+            serializer = CardSerializer(card)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
     def update(self, request, pk=None):
-        return Response(status=status.HTTP_200_OK)
+        try:
+            card = Card.objects.get(id=pk)
+        except ObjectDoesNotExist as e:
+            return Response(str(e), status=status.HTTP_404_NOT_FOUND)
+        serializer = CardSerializer(card, request.data)
+        if(serializer.is_valid()):
+            serializer.save()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request):
+        serializer = CardSerializer(data=request.data)
+        if(serializer.is_valid()):
+            serializer.save()
+            return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, pk=None):
+        result = Card.objects.filter(id=pk)
+        if(len(result) > 0):
+            result.delete()
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_200_OK)
