@@ -75,7 +75,8 @@ class LessonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Lesson
-        fields = ["name", "description", "audience"]
+        fields = ["id", "name", "description", "audience"]
+        read_only_fields = ["id"]
 
 
 class ConceptSerializer(serializers.ModelSerializer):

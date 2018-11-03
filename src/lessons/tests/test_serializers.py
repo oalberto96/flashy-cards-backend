@@ -103,17 +103,18 @@ class LessonSerializerTest(TestCase):
 
     def setUp(self):
         self.lesson_attributes = {
-            "user": User(username="test user"),
-            "audience": Audience(name="Public"),
+            "user": User.objects.create(username="test user"),
+            "audience": Audience.objects.create(name="Public"),
             "name": "Animals",
             "description": "Animals in German"
         }
-        self.lesson = Lesson(**self.lesson_attributes)
+        self.lesson = Lesson.objects.create(**self.lesson_attributes)
         self.serializer = LessonSerializer(instance=self.lesson)
 
     def test_contains_expected_fields(self):
         data = self.serializer.data
-        self.assertEqual(set(data), set(["audience", "name", "description"]))
+        self.assertEqual(set(data), set(
+            ["id", "audience", "name", "description"]))
 
     def test_audience_content(self):
         data = self.serializer.data
@@ -127,6 +128,10 @@ class LessonSerializerTest(TestCase):
         data = self.serializer.data
         self.assertEqual(data["description"],
                          self.lesson_attributes["description"])
+
+    def test_id_content(self):
+        data = self.serializer.data
+        self.assertEqual(data["id"], 1)
 
 
 class ConceptSerializerTest(TestCase):

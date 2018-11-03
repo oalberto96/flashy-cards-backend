@@ -152,3 +152,14 @@ class CardViewsTest(TestCase):
     def test_destroy_a_non_existent_object(self):
         response = self.client.delete("{}{}/".format(self.base_url, "54"))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+# class CardViewsTest(TestCase):
+class LessonViewsTest(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.base_url = "/api/lessons/lessons/"
+        self.content_type = {
+            "content_type": "application/json"
+        }
