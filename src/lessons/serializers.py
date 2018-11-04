@@ -74,12 +74,22 @@ class CardSerializer(serializers.ModelSerializer):
         return Card.objects.create(**validated_data)
 
 
+class ConceptSerializer(serializers.ModelSerializer):
+    card_a = CardSerializer()
+    card_b = CardSerializer()
+
+    class Meta:
+        model = Concept
+        fields = ["card_a", "card_b"]
+
+
 class LessonSerializer(serializers.ModelSerializer):
     audience = AudienceSerializer()
+    concepts = ConceptSerializer(required=False, write_only=True, many=True)
 
     class Meta:
         model = Lesson
-        fields = ["id", "name", "description", "audience"]
+        fields = ["id", "name", "description", "audience", "concepts"]
         read_only_fields = ["id"]
 
     def validate_audience(self, value):
@@ -98,6 +108,19 @@ class LessonSerializer(serializers.ModelSerializer):
         lesson.audience = audience
         lesson.user = validated_data.get("owner")
         lesson.save()
+        if(validated_data.get("concepts")):
+            for concept in validated_data.get("concepts"):
+                card_a_serializer = CardSerializer(data=concept["card_a"])
+                card_a_serializer.is_valid()
+                card_a = card_a_serializer.save()
+                card_b_serializer = CardSerializer(data=concept["card_b"])
+                card_b_serializer.is_valid()
+                card_b = card_b_serializer.save()
+                concept = Concept()
+                concept.card_a = card_a
+                concept.card_b = card_b
+                concept.lesson = lesson
+                concept.save()
         return lesson
 
     def update(self, instance, validated_data):
@@ -109,12 +132,3 @@ class LessonSerializer(serializers.ModelSerializer):
             "description", instance.description)
         instance.save()
         return instance
-
-
-class ConceptSerializer(serializers.ModelSerializer):
-    card_a = CardSerializer()
-    card_b = CardSerializer()
-
-    class Meta:
-        model = Concept
-        fields = ["card_a", "card_b"]

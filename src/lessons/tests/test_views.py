@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from rest_framework import status
-from lessons.models import Card, MediaType, Audience, Lesson
+from lessons.models import Card, MediaType, Audience, Lesson, Concept
 import json
 
 
@@ -171,6 +171,7 @@ class LessonViewsTest(TestCase):
             "audience": Audience.objects.create(name="Public"),
             "user": User.objects.create(username="Testuser")
         }
+        MediaType.objects.create(name="Image")
         Lesson.objects.create(**self.animals_lesson_attributes)
 
     def test_create_new_lesson(self):
@@ -186,6 +187,69 @@ class LessonViewsTest(TestCase):
             **self.content_type)
         found_lesson = Lesson.objects.get(name="Food")
         self.assertEqual(found_lesson.name, food_lesson_attributes["name"])
+
+    def test_create_new_lesson_with_concept(self):
+        food_lesson_attributes = {
+            "name": "Food",
+            "description": "little description",
+            "audience": {
+                "id": 1
+            },
+            "concepts": [
+                {
+                    "card_a": {
+                        "text": "cat",
+                        "media": {
+                            "media_type": {
+                                "id": 1,
+                            },
+                            "source": "http://test.test.png"
+                        },
+                        "audio": ""
+                    },
+                    "card_b": {
+                        "text": "kot",
+                        "media": None,
+                        "audio": ""
+                    }
+                }
+            ]
+        }
+        response = self.client.post(
+            self.base_url,
+            food_lesson_attributes,
+            **self.content_type)
+        concept = Concept.objects.get(id=1)
+        self.assertIsNotNone(concept)
+
+    def test_create_new_lesson_with_media_in_cards(self):
+        food_lesson_attributes = {
+            "name": "Food",
+            "description": "little description",
+            "audience": {
+                "id": 1
+            },
+            "concepts": [
+                {
+                    "card_a": {
+                        "text": "cat",
+                        "media": None,
+                        "audio": ""
+                    },
+                    "card_b": {
+                        "text": "kot",
+                        "media": None,
+                        "audio": ""
+                    }
+                }
+            ]
+        }
+        response = self.client.post(
+            self.base_url,
+            food_lesson_attributes,
+            **self.content_type)
+        concept = Concept.objects.get(id=1)
+        self.assertIsNotNone(concept)
 
     def test_create_new_lesson_with_wrong_data(self):
         food_lesson_attributes = {
