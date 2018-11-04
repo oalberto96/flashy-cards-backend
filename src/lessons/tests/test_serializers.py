@@ -16,7 +16,7 @@ class AudienceSerializerTest(TestCase):
 
     def test_contains_expected_fields(self):
         data = self.serializer.data
-        self.assertEqual(set(data), set(["name"]))
+        self.assertEqual(set(data), set(["id", "name"]))
 
     def test_name_field_content(self):
         data = self.serializer.data
@@ -118,7 +118,7 @@ class LessonSerializerTest(TestCase):
 
     def test_audience_content(self):
         data = self.serializer.data
-        self.assertEqual(data["audience"], {"name": "Public"})
+        self.assertEqual(data["audience"], {"id": 1, "name": "Public"})
 
     def test_name_content(self):
         data = self.serializer.data

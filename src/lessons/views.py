@@ -4,7 +4,7 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import status
 from lessons.models import Card
-from lessons.serializers import CardSerializer
+from lessons.serializers import CardSerializer, LessonSerializer
 
 
 class CardViewSet(ViewSet):
@@ -65,6 +65,9 @@ class LessonViewSet(ViewSet):
         return Response(status=status.HTTP_200_OK)
 
     def create(self, request):
+        serializer = LessonSerializer(data=request.data)
+        if(serializer.is_valid()):
+            serializer.save(owner=request.user)
         return Response(status=status.HTTP_200_OK)
 
     def destroy(self, request, pk=None):

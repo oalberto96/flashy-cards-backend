@@ -4,9 +4,13 @@ from lessons.models import Audience, MediaType, Media, Card, Lesson, Concept
 
 
 class AudienceSerializer(serializers.ModelSerializer):
+    id = serializers.ModelField(
+        model_field=Audience()._meta.get_field('id'))
+
     class Meta:
         model = Audience
-        fields = ["name"]
+        fields = ["id", "name"]
+        read_only_fields = ["name"]
 
 
 class MediaTypeSerializer(serializers.ModelSerializer):
@@ -77,6 +81,24 @@ class LessonSerializer(serializers.ModelSerializer):
         model = Lesson
         fields = ["id", "name", "description", "audience"]
         read_only_fields = ["id"]
+
+    def validate_audience(self, value):
+        if Audience.objects.filter(id=value["id"]).exists():
+            return value
+        else:
+            raise serializers.ValidationError(
+                "Audience with id={} doesn't exist".format(value))
+
+    def create(self, validated_data):
+        lesson = Lesson()
+        audience_data = validated_data.get("audience")
+        audience = Audience.objects.get(id=audience_data["id"])
+        lesson.name = validated_data.get("name")
+        lesson.description = validated_data.get("description")
+        lesson.audience = audience
+        lesson.user = validated_data.get("owner")
+        lesson.save()
+        return lesson
 
 
 class ConceptSerializer(serializers.ModelSerializer):

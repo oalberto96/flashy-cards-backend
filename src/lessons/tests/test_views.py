@@ -1,6 +1,7 @@
 from django.test import TestCase, Client
+from django.contrib.auth.models import User
 from rest_framework import status
-from lessons.models import Card, MediaType
+from lessons.models import Card, MediaType, Audience, Lesson
 import json
 
 
@@ -159,7 +160,30 @@ class LessonViewsTest(TestCase):
 
     def setUp(self):
         self.client = Client()
+        self.user = User.objects.create(username="test_user")
+        self.client.force_login(self.user)
         self.base_url = "/api/lessons/lessons/"
         self.content_type = {
             "content_type": "application/json"
         }
+        self.animals_lesson_attributes = {
+            "name": "Animals in german",
+            "description": "a little description",
+            "audience": Audience.objects.create(name="Public"),
+            "user": User.objects.create(username="Testuser")
+        }
+        Lesson.objects.create(**self.animals_lesson_attributes)
+
+    def test_create_new_lesson(self):
+        food_lesson_attributes = {
+            "name": "Food",
+            "description": "little description",
+            "audience": {
+                "id": 1
+            }}
+        response = self.client.post(
+            self.base_url,
+            food_lesson_attributes,
+            **self.content_type)
+        found_lesson = Lesson.objects.get(name="Food")
+        self.assertEqual(found_lesson.name, food_lesson_attributes["name"])
