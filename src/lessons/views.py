@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.decorators import action
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import status
-from lessons.models import Card, Lesson
+from lessons.models import Card, Lesson, Concept
 from lessons.serializers import CardSerializer, LessonSerializer
 
 
@@ -86,3 +87,11 @@ class LessonViewSet(ViewSet):
         except ObjectDoesNotExist as e:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["get"])
+    def concepts(self, request, pk=None):
+        lesson = Lesson.objects.get(id=pk)
+        lesson.concepts = [
+            concept for concept in Concept.objects.filter(lesson=lesson)]
+        serializer = LessonSerializer(instance=lesson)
+        return Response(serializer.data, status.HTTP_200_OK)

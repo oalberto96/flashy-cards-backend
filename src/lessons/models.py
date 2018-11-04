@@ -34,6 +34,7 @@ class Card(models.Model):
     text = models.CharField(max_length=150)
     audio = models.CharField(max_length=2000)
     creation_date = models.DateTimeField(auto_now_add=True)
+    concepts = []
 
     def __str__(self):
         return self.text

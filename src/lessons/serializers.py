@@ -87,7 +87,7 @@ class ConceptSerializer(serializers.ModelSerializer):
 
 class LessonSerializer(serializers.ModelSerializer):
     audience = AudienceSerializer()
-    concepts = ConceptSerializer(required=False, write_only=True, many=True)
+    concepts = ConceptSerializer(required=False, many=True)
 
     class Meta:
         model = Lesson

@@ -370,3 +370,37 @@ class LessonViewsTest(TestCase):
         self.client.delete("{}{}/".format(self.base_url, "56"))
         new_lesson_count = len(Lesson.objects.all())
         self.assertEqual(new_lesson_count, lesson_count)
+
+    def test_get_lessons_with_concepts(self):
+        animal_lesson_attributes = {
+            "name": "Food",
+            "description": "little description",
+            "audience": {
+                "id": 1
+            },
+            "concepts": [
+                {
+                    "card_a": {
+                        "text": "cat",
+                        "media": {
+                            "media_type": {
+                                "id": 1,
+                            },
+                            "source": "http://test.test.png"
+                        },
+                        "audio": ""
+                    },
+                    "card_b": {
+                        "text": "kot",
+                        "media": None,
+                        "audio": ""
+                    }
+                }
+            ]
+        }
+        self.client.post(
+            self.base_url,
+            animal_lesson_attributes,
+            **self.content_type)
+        response = self.client.get("{}{}/concepts/".format(self.base_url, 2))
+        self.assertEqual(response.data["concepts"][0]["card_a"]["text"], "cat")
