@@ -187,3 +187,40 @@ class LessonViewsTest(TestCase):
             **self.content_type)
         found_lesson = Lesson.objects.get(name="Food")
         self.assertEqual(found_lesson.name, food_lesson_attributes["name"])
+
+    def test_create_new_lesson_with_wrong_data(self):
+        food_lesson_attributes = {
+            "name": "Not food",
+            "description": "little description",
+        }
+        response = self.client.post(
+            self.base_url,
+            food_lesson_attributes,
+            **self.content_type)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_lesson(self):
+        new_animals_lesson_attributes = {
+            "name": "Animals in french",
+            "description": "a big description",
+            "audience": {
+                "id": 1
+            }
+        }
+        self.client.put("{}{}/".format(self.base_url, "1"),
+                        new_animals_lesson_attributes, **self.content_type)
+        lesson = Lesson.objects.get(name="Animals in french")
+        self.assertEqual(lesson.description,
+                         new_animals_lesson_attributes["description"])
+
+    def test_update_a_non_existent_lesson(self):
+        new_animals_lesson_attributes = {
+            "name": "Animals in french",
+            "description": "a big description",
+            "audience": {
+                "id": 1
+            }
+        }
+        response = self.client.put("{}{}/".format(self.base_url, "56"),
+                                   new_animals_lesson_attributes, **self.content_type)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

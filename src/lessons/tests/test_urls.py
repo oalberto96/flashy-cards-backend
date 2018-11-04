@@ -47,11 +47,11 @@ class LessonUrlTest(TestCase):
 
     def test_url_resolves_to_update(self):
         response = self.client.put("{}{}/".format(self.base_url, 1), {})
-        self.assertLessEqual(response.status_code, status.HTTP_200_OK)
+        self.assertLessEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_url_resolves_to_create(self):
         response = self.client.post(self.base_url, {})
-        self.assertLessEqual(response.status_code, status.HTTP_200_OK)
+        self.assertLessEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_url_resolves_to_delete(self):
         response = self.client.delete("{}{}/".format(self.base_url, "1"))

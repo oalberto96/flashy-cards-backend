@@ -100,6 +100,16 @@ class LessonSerializer(serializers.ModelSerializer):
         lesson.save()
         return lesson
 
+    def update(self, instance, validated_data):
+        audience_data = validated_data.get("audience")
+        audience = Audience.objects.get(id=audience_data["id"])
+        instance.audience = validated_data.get(audience, instance.audience)
+        instance.name = validated_data.get("name", instance.name)
+        instance.description = validated_data.get(
+            "description", instance.description)
+        instance.save()
+        return instance
+
 
 class ConceptSerializer(serializers.ModelSerializer):
     card_a = CardSerializer()
