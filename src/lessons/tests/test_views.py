@@ -155,7 +155,6 @@ class CardViewsTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
-# class CardViewsTest(TestCase):
 class LessonViewsTest(TestCase):
 
     def setUp(self):
@@ -224,3 +223,8 @@ class LessonViewsTest(TestCase):
         response = self.client.put("{}{}/".format(self.base_url, "56"),
                                    new_animals_lesson_attributes, **self.content_type)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_all_lessons(self):
+        lesson_count = len(Lesson.objects.all())
+        response = self.client.get(self.base_url)
+        self.assertEqual(len(response.data), lesson_count)

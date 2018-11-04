@@ -56,7 +56,9 @@ class CardViewSet(ViewSet):
 class LessonViewSet(ViewSet):
 
     def list(self, request):
-        return Response(status=status.HTTP_200_OK)
+        queryset = Lesson.objects.all()
+        serializer = LessonSerializer(queryset, many=True)
+        return Response(serializer.data, status.HTTP_200_OK)
 
     def retrieve(self, request, pk=None):
         return Response(status=status.HTTP_200_OK)
