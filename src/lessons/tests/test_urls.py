@@ -55,4 +55,4 @@ class LessonUrlTest(TestCase):
 
     def test_url_resolves_to_delete(self):
         response = self.client.delete("{}{}/".format(self.base_url, "1"))
-        self.assertLessEqual(response.status_code, status.HTTP_200_OK)
+        self.assertLessEqual(response.status_code, status.HTTP_404_NOT_FOUND)

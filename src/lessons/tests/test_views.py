@@ -228,3 +228,15 @@ class LessonViewsTest(TestCase):
         lesson_count = len(Lesson.objects.all())
         response = self.client.get(self.base_url)
         self.assertEqual(len(response.data), lesson_count)
+
+    def test_delete_lesson(self):
+        lesson_count = len(Lesson.objects.all())
+        self.client.delete("{}{}/".format(self.base_url, "1"))
+        new_lesson_count = len(Lesson.objects.all())
+        self.assertEqual(new_lesson_count, lesson_count - 1)
+
+    def test_delete_a_non_existen_lesson(self):
+        lesson_count = len(Lesson.objects.all())
+        self.client.delete("{}{}/".format(self.base_url, "56"))
+        new_lesson_count = len(Lesson.objects.all())
+        self.assertEqual(new_lesson_count, lesson_count)
