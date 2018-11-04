@@ -75,12 +75,14 @@ class CardSerializer(serializers.ModelSerializer):
 
 
 class ConceptSerializer(serializers.ModelSerializer):
+    id = serializers.ModelField(
+        model_field=Concept()._meta.get_field('id'), required=False)
     card_a = CardSerializer()
     card_b = CardSerializer()
 
     class Meta:
         model = Concept
-        fields = ["card_a", "card_b"]
+        fields = ["id", "card_a", "card_b"]
 
 
 class LessonSerializer(serializers.ModelSerializer):
@@ -131,4 +133,15 @@ class LessonSerializer(serializers.ModelSerializer):
         instance.description = validated_data.get(
             "description", instance.description)
         instance.save()
+        if(validated_data.get("concepts")):
+            for new_concept_data in validated_data.get("concepts"):
+                concept = Concept.objects.get(id=new_concept_data["id"])
+                card_a_serializer = CardSerializer(
+                    concept.card_a, new_concept_data["card_a"])
+                card_a_serializer.is_valid()
+                card_a_serializer.save()
+                card_b_serializer = CardSerializer(
+                    concept.card_b, new_concept_data["card_b"])
+                card_b_serializer.is_valid()
+                card_b_serializer.save()
         return instance

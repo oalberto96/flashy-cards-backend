@@ -155,7 +155,7 @@ class ConceptSerializerTest(TestCase):
 
     def test_contains_expected_fields(self):
         data = self.serializer.data
-        self.assertEqual(set(data), set(["card_a", "card_b"]))
+        self.assertEqual(set(data), set(["card_a", "card_b", "id"]))
 
     def test_card_a_content(self):
         data = self.serializer.data
