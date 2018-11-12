@@ -34,7 +34,11 @@ class MediaSerializer(serializers.ModelSerializer):
 
 class CardSerializer(serializers.ModelSerializer):
     media = MediaSerializer(allow_null=True)
-    audio = serializers.CharField(max_length=150, allow_blank=True)
+    audio = serializers.CharField(
+        max_length=150, allow_blank=True, required=False)
+    text = serializers.CharField(
+        max_length=150, allow_blank=True
+    )
 
     class Meta:
         model = Card

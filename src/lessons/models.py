@@ -32,7 +32,7 @@ class Card(models.Model):
     media = models.ForeignKey(
         Media, on_delete=models.SET_NULL, null=True)
     text = models.CharField(max_length=150)
-    audio = models.CharField(max_length=2000)
+    audio = models.CharField(max_length=2000, null=True)
     creation_date = models.DateTimeField(auto_now_add=True)
     concepts = []
 
