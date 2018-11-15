@@ -319,7 +319,7 @@ class LessonViewsTest(TestCase):
                             "media_type": {
                                 "id": 1,
                             },
-                            "source": "http://test.test.png"
+                            "source": "http://new.test.png"
                         },
                         "audio": ""
                     },
@@ -340,7 +340,7 @@ class LessonViewsTest(TestCase):
             new_animal_attributes,
             **self.content_type)
         concept = Concept.objects.get(id=1)
-        self.assertEqual(concept.card_b.text, "Katze")
+        self.assertEqual(concept.card_a.media.source, "http://new.test.png")
 
     def test_update_lesson_with_a_new_concept(self):
         animal_lesson_attributes = {

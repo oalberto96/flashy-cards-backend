@@ -63,6 +63,7 @@ class CardSerializer(serializers.ModelSerializer):
             else:
                 instance.media.media_type = media_type
                 instance.media.source = media["source"]
+                instance.media.save()
         instance.text = validated_data.get("text", instance.text)
         instance.audio = validated_data.get("audio", instance.audio)
         instance.save()

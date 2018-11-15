@@ -73,7 +73,6 @@ class LessonViewSet(ViewSet):
         if serializer.is_valid():
             serializer.save(lesson_id=pk)
             return Response(status=status.HTTP_200_OK)
-        print(serializer.errors)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request):
