@@ -342,6 +342,90 @@ class LessonViewsTest(TestCase):
         concept = Concept.objects.get(id=1)
         self.assertEqual(concept.card_b.text, "Katze")
 
+    def test_update_lesson_with_a_new_concept(self):
+        animal_lesson_attributes = {
+            "name": "Food",
+            "description": "little description",
+            "audience": {
+                "id": 1
+            },
+            "concepts": [
+                {
+                    "card_a": {
+                        "text": "cat",
+                        "media": {
+                            "media_type": {
+                                "id": 1,
+                            },
+                            "source": "http://test.test.png"
+                        },
+                        "audio": ""
+                    },
+                    "card_b": {
+                        "text": "kot",
+                        "media": None,
+                        "audio": ""
+                    }
+                }
+            ]
+        }
+
+        new_animal_attributes = {
+            "name": "Animals",
+            "description": "little description",
+            "audience": {
+                "id": 1
+            },
+            "concepts": [
+                {
+                    "id": 1,
+                    "card_a": {
+                        "text": "cat",
+                        "media": {
+                            "media_type": {
+                                "id": 1,
+                            },
+                            "source": "http://test.test.png"
+                        },
+                        "audio": ""
+                    },
+                    "card_b": {
+                        "text": "Katze",
+                        "media": None,
+                        "audio": ""
+                    }
+                },
+                {
+                    "id": -1,
+                    "card_a": {
+                        "text": "hund",
+                        "media": {
+                            "media_type": {
+                                "id": 1,
+                            },
+                            "source": "http://test.hund.png"
+                        },
+                        "audio": ""
+                    },
+                    "card_b": {
+                        "text": "Dog",
+                        "media": None,
+                        "audio": ""
+                    }
+                }
+            ]
+        }
+        self.client.post(
+            self.base_url,
+            animal_lesson_attributes,
+            **self.content_type)
+        response = self.client.put("{}{}/".format(
+            self.base_url, "1"),
+            new_animal_attributes,
+            **self.content_type)
+        concept = Concept.objects.get(id=2)
+        self.assertEqual(concept.card_b.text, "Dog")
+
     def test_update_a_non_existent_lesson(self):
         new_animals_lesson_attributes = {
             "name": "Animals in french",

@@ -35,7 +35,7 @@ class MediaSerializer(serializers.ModelSerializer):
 class CardSerializer(serializers.ModelSerializer):
     media = MediaSerializer(allow_null=True)
     audio = serializers.CharField(
-        max_length=150, allow_blank=True, required=False)
+        max_length=150, allow_blank=True, required=False, allow_null=True)
     text = serializers.CharField(
         max_length=150, allow_blank=True
     )
@@ -139,13 +139,30 @@ class LessonSerializer(serializers.ModelSerializer):
         instance.save()
         if(validated_data.get("concepts")):
             for new_concept_data in validated_data.get("concepts"):
-                concept = Concept.objects.get(id=new_concept_data["id"])
-                card_a_serializer = CardSerializer(
-                    concept.card_a, new_concept_data["card_a"])
-                card_a_serializer.is_valid()
-                card_a_serializer.save()
-                card_b_serializer = CardSerializer(
-                    concept.card_b, new_concept_data["card_b"])
-                card_b_serializer.is_valid()
-                card_b_serializer.save()
+                concept_id = new_concept_data["id"]
+                if concept_id > 0:
+                    concept = Concept.objects.get(id=new_concept_data["id"])
+                    card_a_serializer = CardSerializer(
+                        concept.card_a, new_concept_data["card_a"])
+                    card_b_serializer = CardSerializer(
+                        concept.card_b, new_concept_data["card_b"])
+                    card_a_serializer.is_valid()
+                    card_a_serializer.save()
+                    card_b_serializer.is_valid()
+                    card_b_serializer.save()
+                else:
+                    card_a_serializer = CardSerializer(
+                        data=new_concept_data["card_a"])
+                    card_a_serializer.is_valid()
+                    card_a = card_a_serializer.save()
+                    card_b_serializer = CardSerializer(
+                        data=new_concept_data["card_b"])
+                    card_b_serializer.is_valid()
+                    card_b = card_b_serializer.save()
+                    concept = Concept()
+                    concept.card_a = card_a
+                    concept.card_b = card_b
+                    concept.lesson = Lesson.objects.get(
+                        id=validated_data["lesson_id"])
+                    concept.save()
         return instance

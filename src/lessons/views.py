@@ -71,8 +71,10 @@ class LessonViewSet(ViewSet):
             return Response(str(e), status=status.HTTP_404_NOT_FOUND)
         serializer = LessonSerializer(lesson, request.data)
         if serializer.is_valid():
-            serializer.save()
-        return Response(status=status.HTTP_200_OK)
+            serializer.save(lesson_id=pk)
+            return Response(status=status.HTTP_200_OK)
+        print(serializer.errors)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request):
         serializer = LessonSerializer(data=request.data)
