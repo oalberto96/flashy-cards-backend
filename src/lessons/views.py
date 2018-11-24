@@ -3,7 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.decorators import action
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, permissions
 from lessons.models import Card, Lesson, Concept
 from lessons.serializers import CardSerializer, LessonSerializer
 
@@ -55,9 +55,10 @@ class CardViewSet(ViewSet):
 
 
 class LessonViewSet(ViewSet):
+    permission_classes = [permissions.IsAuthenticated]
 
     def list(self, request):
-        queryset = Lesson.objects.all()
+        queryset = Lesson.objects.filter(user=request.user)
         serializer = LessonSerializer(queryset, many=True)
         return Response(serializer.data, status.HTTP_200_OK)
 

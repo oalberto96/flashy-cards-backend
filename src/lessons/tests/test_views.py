@@ -169,7 +169,7 @@ class LessonViewsTest(TestCase):
             "name": "Animals in german",
             "description": "a little description",
             "audience": Audience.objects.create(name="Public"),
-            "user": User.objects.create(username="Testuser")
+            "user": self.user
         }
         MediaType.objects.create(name="Image")
         Lesson.objects.create(**self.animals_lesson_attributes)

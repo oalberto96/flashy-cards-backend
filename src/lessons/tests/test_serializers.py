@@ -160,9 +160,9 @@ class ConceptSerializerTest(TestCase):
     def test_card_a_content(self):
         data = self.serializer.data
         self.assertEqual(data["card_a"], {
-                         "text": "Dog", "media": None, "audio": ""})
+                         "text": "Dog", "media": None, "audio": None})
 
     def test_card_b_content(self):
         data = self.serializer.data
         self.assertEqual(data["card_b"], {
-                         "text": "Hund", "media": None, "audio": ""})
+                         "text": "Hund", "media": None, "audio": None})

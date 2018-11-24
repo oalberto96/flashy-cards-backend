@@ -27,7 +27,7 @@ def login(request):
 def sign_up(request):
     username = request.data.get("username")
     password = request.data.get("password")
-    email = request.data.get("email")
+    email = username
     credentials = {}
     data = {}
     if(username and password and email):

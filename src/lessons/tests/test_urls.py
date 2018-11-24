@@ -1,5 +1,6 @@
 from django.test import TestCase, Client
 from django.urls import resolve, reverse
+from django.contrib.auth.models import User
 from rest_framework import status
 from lessons.models import Card
 from lessons.views import CardViewSet
@@ -35,6 +36,8 @@ class LessonUrlTest(TestCase):
 
     def setUp(self):
         self.client = Client()
+        self.user = User.objects.create(username="test_user")
+        self.client.force_login(self.user)
         self.base_url = "/api/lessons/lessons/"
 
     def test_url_resolves_to_get_all(self):
