@@ -1,0 +1,23 @@
+[
+  {
+    "model": "lessons.mediatype",
+    "pk": 1,
+    "fields": {
+      "name": "IMAGE"
+    }
+  },
+  {
+    "model": "lessons.audience",
+    "pk": 1,
+    "fields": {
+      "name": "PRIVATE"
+    }
+  },
+  {
+    "model": "lessons.audience",
+    "pk": 2,
+    "fields": {
+      "name": "PUBLIC"
+    }
+  }
+]
