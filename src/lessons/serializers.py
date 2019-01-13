@@ -93,10 +93,13 @@ class ConceptSerializer(serializers.ModelSerializer):
 class LessonSerializer(serializers.ModelSerializer):
     audience = AudienceSerializer()
     concepts = ConceptSerializer(required=False, many=True)
+    deleted_concepts = serializers.ListField(required=False, allow_null=True,
+        child=serializers.IntegerField()
+    )
 
     class Meta:
         model = Lesson
-        fields = ["id", "name", "description", "audience", "concepts"]
+        fields = ["id", "name", "description", "audience", "concepts", "deleted_concepts"]
         read_only_fields = ["id"]
 
     def validate_audience(self, value):
@@ -166,4 +169,8 @@ class LessonSerializer(serializers.ModelSerializer):
                     concept.lesson = Lesson.objects.get(
                         id=validated_data["lesson_id"])
                     concept.save()
+        deleted_concepts = validated_data.get("deleted_concepts")
+        for concept_to_delete_id in deleted_concepts:
+            if concept_to_delete_id > 0:
+                Concept.objects.filter(id=concept_to_delete_id).delete()
         return instance

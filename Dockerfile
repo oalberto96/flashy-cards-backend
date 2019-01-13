@@ -1,5 +1,5 @@
 FROM python:3
-MAINTAINER oalberto96
+LABEL author="oalberto96"
 WORKDIR /usr/src/app
 COPY . /usr/src/app
 EXPOSE 8000
