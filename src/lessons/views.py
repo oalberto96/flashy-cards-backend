@@ -81,6 +81,7 @@ class LessonViewSet(ViewSet):
         if(serializer.is_valid()):
             serializer.save(owner=request.user)
             return Response(status=status.HTTP_200_OK)
+        print(serializer.errors)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, pk=None):

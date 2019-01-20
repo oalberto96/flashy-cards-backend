@@ -2,6 +2,9 @@ from rest_framework import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from lessons.models import Audience, MediaType, Media, Card, Lesson, Concept
 
+import base64
+from datetime import datetime
+
 
 class AudienceSerializer(serializers.ModelSerializer):
     id = serializers.ModelField(
@@ -26,10 +29,21 @@ class MediaTypeSerializer(serializers.ModelSerializer):
 
 class MediaSerializer(serializers.ModelSerializer):
     media_type = MediaTypeSerializer()
+    image_file = serializers.CharField(required=False)
+    source = serializers.CharField(max_length=2000, allow_blank=True)
 
     class Meta:
         model = Media
-        fields = ["media_type", "source"]
+        fields = ["media_type", "source", "image_file"]
+
+    def validate_image_file(self, value):
+        if(value != None):
+            try:
+                base64.b64encode(b'value')
+            except:
+                raise serializers.ValidationError(
+                    "This is not an base64 string")
+        return value
 
 
 class CardSerializer(serializers.ModelSerializer):
@@ -73,10 +87,20 @@ class CardSerializer(serializers.ModelSerializer):
         if(validated_data["media"]):
             media = validated_data["media"]
             media_type = MediaType.objects.get(id=media["media_type"]["id"])
+            image_name = self.save_image(media["image_file"])
             card_media = Media.objects.create(
-                media_type=media_type, source=media["source"])
+                media_type=media_type, source=image_name)
             validated_data["media"] = card_media
         return Card.objects.create(**validated_data)
+
+    def save_image(self, image_file):
+        now = datetime.now().timestamp()
+        image_name = str(now) + ".png"
+        raw_data = image_file.split(",", 1)[1]
+        with open(image_name, "wb") as fh:
+            fh.write(base64.decodebytes(
+                raw_data.encode("utf-8")))
+        return image_name
 
 
 class ConceptSerializer(serializers.ModelSerializer):
@@ -94,12 +118,13 @@ class LessonSerializer(serializers.ModelSerializer):
     audience = AudienceSerializer()
     concepts = ConceptSerializer(required=False, many=True)
     deleted_concepts = serializers.ListField(required=False, allow_null=True,
-        child=serializers.IntegerField()
-    )
+                                             child=serializers.IntegerField()
+                                             )
 
     class Meta:
         model = Lesson
-        fields = ["id", "name", "description", "audience", "concepts", "deleted_concepts"]
+        fields = ["id", "name", "description",
+                  "audience", "concepts", "deleted_concepts"]
         read_only_fields = ["id"]
 
     def validate_audience(self, value):
@@ -122,6 +147,8 @@ class LessonSerializer(serializers.ModelSerializer):
             for concept in validated_data.get("concepts"):
                 card_a_serializer = CardSerializer(data=concept["card_a"])
                 card_a_serializer.is_valid()
+                print(card_a_serializer.errors)
+                # print(concept["card_a"]["media"]["image_file"])
                 card_a = card_a_serializer.save()
                 card_b_serializer = CardSerializer(data=concept["card_b"])
                 card_b_serializer.is_valid()
