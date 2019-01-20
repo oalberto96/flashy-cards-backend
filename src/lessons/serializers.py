@@ -1,8 +1,10 @@
+from django.conf import settings
 from rest_framework import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from lessons.models import Audience, MediaType, Media, Card, Lesson, Concept
 
 import base64
+import os
 from datetime import datetime
 
 
@@ -95,9 +97,9 @@ class CardSerializer(serializers.ModelSerializer):
 
     def save_image(self, image_file):
         now = datetime.now().timestamp()
-        image_name = str(now) + ".png"
+        image_name = "cardimage" + str(now) + ".png"
         raw_data = image_file.split(",", 1)[1]
-        with open(image_name, "wb") as fh:
+        with open(os.path.join(settings.MEDIA_ROOT, image_name), "wb") as fh:
             fh.write(base64.decodebytes(
                 raw_data.encode("utf-8")))
         return image_name
@@ -147,8 +149,6 @@ class LessonSerializer(serializers.ModelSerializer):
             for concept in validated_data.get("concepts"):
                 card_a_serializer = CardSerializer(data=concept["card_a"])
                 card_a_serializer.is_valid()
-                print(card_a_serializer.errors)
-                # print(concept["card_a"]["media"]["image_file"])
                 card_a = card_a_serializer.save()
                 card_b_serializer = CardSerializer(data=concept["card_b"])
                 card_b_serializer.is_valid()

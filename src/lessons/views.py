@@ -43,7 +43,7 @@ class CardViewSet(ViewSet):
         if(serializer.is_valid()):
             serializer.save()
             return Response(status=status.HTTP_200_OK)
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, pk=None):
         result = Card.objects.filter(id=pk)
@@ -82,7 +82,7 @@ class LessonViewSet(ViewSet):
             serializer.save(owner=request.user)
             return Response(status=status.HTTP_200_OK)
         print(serializer.errors)
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, pk=None):
         try:
