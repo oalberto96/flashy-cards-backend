@@ -69,17 +69,26 @@ class CardSerializer(serializers.ModelSerializer):
         return value
 
     def update(self, instance, validated_data):
+        print(instance)
         media = validated_data.get("media")
+        media_type_image = MediaType.objects.get(name="IMAGE")
         if(media):
             media_type_data = media["media_type"]
             media_type = MediaType.objects.get(id=media_type_data["id"])
-            if(instance.media is None):
-                instance.media = Media.objects.create(
-                    source=media["source"], media_type=media_type)
-            else:
-                instance.media.media_type = media_type
-                instance.media.source = media["source"]
-                instance.media.save()
+            if(media_type == media_type_image):
+                if(instance.media is None):
+                    image_name = self.save_image(media["image_file"])
+                    instance.media = Media.objects.create(
+                        source=image_name, media_type=media_type)
+                else:
+                    if "image_file" in media:
+                        self.delete_image(instance.media.source)
+                        new_image = self.save_image(media["image_file"])
+                        instance.media.source = new_image
+                    else:
+                        instance.media.source = media["source"]
+                    instance.media.media_type = media_type
+                    instance.media.save()
         instance.text = validated_data.get("text", instance.text)
         instance.audio = validated_data.get("audio", instance.audio)
         instance.save()
@@ -103,6 +112,10 @@ class CardSerializer(serializers.ModelSerializer):
             fh.write(base64.decodebytes(
                 raw_data.encode("utf-8")))
         return image_name
+
+    def delete_image(self, image_path):
+        file_path = os.path.join(settings.MEDIA_ROOT, image_path)
+        return os.remove(file_path) if os.path.isfile(file_path) else False
 
 
 class ConceptSerializer(serializers.ModelSerializer):
