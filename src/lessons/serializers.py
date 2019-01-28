@@ -72,6 +72,7 @@ class CardSerializer(serializers.ModelSerializer):
         print(instance)
         media = validated_data.get("media")
         media_type_image = MediaType.objects.get(name="IMAGE")
+        media_type_gif = MediaType.objects.get(name="GIF")
         if(media):
             media_type_data = media["media_type"]
             media_type = MediaType.objects.get(id=media_type_data["id"])
@@ -98,7 +99,13 @@ class CardSerializer(serializers.ModelSerializer):
         if(validated_data["media"]):
             media = validated_data["media"]
             media_type = MediaType.objects.get(id=media["media_type"]["id"])
-            image_name = self.save_image(media["image_file"])
+            media_type_gif = MediaType.objects.get(name="GIF")
+            media_type_image = MediaType.objects.get(name="IMAGE")
+            if media_type == media_type_image:
+                image_name = self.save_image(media["image_file"])
+            elif media_type == media_type_gif:
+                image_name = media["source"]
+            print(image_name)
             card_media = Media.objects.create(
                 media_type=media_type, source=image_name)
             validated_data["media"] = card_media
