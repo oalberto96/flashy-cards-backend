@@ -87,7 +87,7 @@ class LessonViewSet(ViewSet):
     def destroy(self, request, pk=None):
         try:
             Lesson.objects.get(id=pk).delete()
-        except ObjectDoesNotExist as e:
+        except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_200_OK)
 

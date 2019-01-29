@@ -69,7 +69,6 @@ class CardSerializer(serializers.ModelSerializer):
         return value
 
     def update(self, instance, validated_data):
-        print(instance)
         media = validated_data.get("media")
         media_type_image = MediaType.objects.get(name="IMAGE")
         media_type_gif = MediaType.objects.get(name="GIF")
@@ -90,6 +89,15 @@ class CardSerializer(serializers.ModelSerializer):
                         instance.media.source = media["source"]
                     instance.media.media_type = media_type
                     instance.media.save()
+            elif(media_type_gif == media_type):
+                if instance.media is None:
+                    instance.media = Media.objects.create(
+                        source=media["source"], media_type=media_type_gif
+                    )
+                else:
+                    self.delete_image(instance.media.source)
+                    instance.media.source = media["source"]
+                    instance.media.save()
         instance.text = validated_data.get("text", instance.text)
         instance.audio = validated_data.get("audio", instance.audio)
         instance.save()
@@ -105,7 +113,6 @@ class CardSerializer(serializers.ModelSerializer):
                 image_name = self.save_image(media["image_file"])
             elif media_type == media_type_gif:
                 image_name = media["source"]
-            print(image_name)
             card_media = Media.objects.create(
                 media_type=media_type, source=image_name)
             validated_data["media"] = card_media
