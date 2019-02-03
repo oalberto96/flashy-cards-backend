@@ -25,7 +25,7 @@ SECRET_KEY = '8g(lrsa&2^%x@tgfz7h8rl3b#8l#^f$!-v-jy22vk1j0c1zte='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['localhost', 'django-upstream']
 
 
 # Application definition
@@ -137,4 +137,3 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 MEDIA_URL = '/media/'
-
