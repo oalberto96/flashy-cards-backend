@@ -62,3 +62,20 @@ class Concept(models.Model):
 
     def __str__(self):
         return "{} : {}".format(self.card_a, self.card_b)
+
+
+class TrainingScore(models.Model):
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    creation_date = models.DateTimeField(auto_now_add=True)
+
+    def save_concepts_score(self, concepts):
+        for concept_data in concepts:
+            concept = Concept.objects.get(id=concept_data["id"])
+            TrainingScoreConcept.objects.create(
+                training_score=self, concept=concept, mistakes=concept_data["mistakes"])
+
+
+class TrainingScoreConcept(models.Model):
+    training_score = models.ForeignKey(TrainingScore, on_delete=models.CASCADE)
+    concept = models.ForeignKey(Concept, on_delete=models.CASCADE)
+    mistakes = models.IntegerField()

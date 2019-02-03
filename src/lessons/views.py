@@ -4,7 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import status, permissions
-from lessons.models import Card, Lesson, Concept
+from lessons.models import Card, Lesson, Concept, TrainingScore
 from lessons.serializers import CardSerializer, LessonSerializer
 
 
@@ -98,3 +98,11 @@ class LessonViewSet(ViewSet):
             concept for concept in Concept.objects.filter(lesson=lesson)]
         serializer = LessonSerializer(instance=lesson)
         return Response(serializer.data, status.HTTP_200_OK)
+
+    @action(detail=True, methods=["post"])
+    def training(self, request, pk=None):
+        concepts_score = request.data.get("concepts")
+        lesson = Lesson.objects.get(id=pk)
+        training_score = TrainingScore.objects.create(lesson=lesson)
+        training_score.save_concepts_score(concepts_score)
+        return Response(status=status.HTTP_200_OK)
