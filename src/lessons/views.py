@@ -63,7 +63,9 @@ class LessonViewSet(ViewSet):
         return Response(serializer.data, status.HTTP_200_OK)
 
     def retrieve(self, request, pk=None):
-        return Response(status=status.HTTP_200_OK)
+        lesson = Lesson.objects.get(id = pk)
+        serializer = LessonSerializer(lesson)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def update(self, request, pk=None):
         try:
