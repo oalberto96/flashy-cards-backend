@@ -58,7 +58,7 @@ class LessonViewSet(ViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def list(self, request):
-        queryset = Lesson.objects.filter(user=request.user)
+        queryset = Lesson.objects.filter(user=request.user).order_by('-last_access')
         serializer = LessonSerializer(queryset, many=True)
         return Response(serializer.data, status.HTTP_200_OK)
 
@@ -96,6 +96,7 @@ class LessonViewSet(ViewSet):
     @action(detail=True, methods=["get"])
     def concepts(self, request, pk=None):
         lesson = Lesson.objects.get(id=pk)
+        lesson.save()
         lesson.concepts = [
             concept for concept in Concept.objects.filter(lesson=lesson)]
         serializer = LessonSerializer(instance=lesson)
