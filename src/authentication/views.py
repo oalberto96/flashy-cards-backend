@@ -12,6 +12,7 @@ from rest_framework import status
 @api_view(['POST'])
 def login(request):
     credentials = {}
+    user_data = {}
     credentials["csrf"] = get_token(request)
     user = auth.authenticate(request=request, username=request.data.get("username"),
                              password=request.data.get("password"))
@@ -19,7 +20,8 @@ def login(request):
         auth.login(request, user)
         token, created = Token.objects.get_or_create(user=user)
         credentials["token"] = token.key
-        return Response(status=status.HTTP_200_OK, data=credentials)
+        user_data["username"] = user.username
+        return Response(status=status.HTTP_200_OK, data={"credentials": credentials, "user_data": user_data})
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
