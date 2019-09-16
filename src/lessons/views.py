@@ -1,12 +1,13 @@
 from django.shortcuts import render
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Sum, Count
+from django.db.models.functions import TruncDay
 from rest_framework.decorators import action
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from lessons.models import Card, Lesson, Concept, TrainingScore, TrainingScoreConcept
-from lessons.serializers import CardSerializer, LessonSerializer, TrainingScoreSerializer
+from lessons.serializers import CardSerializer, LessonSerializer
 
 
 class CardViewSet(ViewSet):
@@ -114,15 +115,12 @@ class LessonViewSet(ViewSet):
     @action(detail=True, methods=["get"])
     def score(self, request, pk=None):
         training_scores = TrainingScore.objects.filter(lesson=pk)
-        queryset = []
-        for training_score in training_scores:
-            data = TrainingScoreConcept.objects.filter(training_score=training_score).aggregate(Sum("mistakes"))
-    
-            queryset.append({
-                "date": training_score.creation_date,
-                "mistakes": data["mistakes__sum"]
-                })
-        print(queryset)
+        queryset = TrainingScoreConcept.objects\
+                .filter(training_score__lesson=pk,)\
+                .annotate(date=TruncDay("training_score__creation_date"))\
+                .values("date")\
+                .annotate(mistakes=Sum('mistakes'))\
+                .values("date", "mistakes")   
         return Response(status=status.HTTP_200_OK, data=queryset)
 
 
