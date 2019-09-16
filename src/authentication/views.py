@@ -31,6 +31,7 @@ def sign_up(request):
     password = request.data.get("password")
     email = username
     credentials = {}
+    user_data = {"username": username}
     data = {}
     if(username and password and email):
         try:
@@ -40,7 +41,7 @@ def sign_up(request):
                 auth.login(request, user)
                 token, created = Token.objects.get_or_create(user=user)
                 credentials["token"] = token.key
-            return Response(status=status.HTTP_200_OK, data=credentials)
+            return Response(status=status.HTTP_200_OK, data={"credentials": credentials, "user_data": user_data})
         except Error as e:
             data["message"] = str(e)
     return Response(status=status.HTTP_409_CONFLICT, data=data)
